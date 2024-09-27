@@ -166,90 +166,66 @@
                     phoneInput.value = '+' + countryCode + '' + phoneInput.value.replace(/^\+\d+\s*/, '');
                 }
             });
+            
 
             //Submitting the form
-            $('#submitBtn').click(function(e){
+            $('#submitBtn').click(function(e) {
                 e.preventDefault();
-                const name = $("#name").val();
-                const email = $("#email").val();
-                const phone = $("#phone").val();
-
-                if (!name){
-                    swal({
-                        text: "Please provide your name.",
-                        icon: 'error',
-                        timer: 2000,
-                        buttons: false,
-                    })
+            
+                const name = $("#name").val().trim();
+                const email = $("#email").val().trim();
+                const phone = $("#phone").val().trim();
+            
+                function showAlert(text, icon, timer = 2000) {
+                    swal({ text, icon, timer, buttons: false });
+                }
+            
+                if (!name) {
+                    showAlert("Please provide your name.", 'error');
                     $("#name").focus();
-                } else if (!phone){
-                    swal({
-                        text: "Please provide your phone number.",
-                        icon: 'error',
-                        timer: 2000,
-                        buttons: false,
-                    })
+                } else if (phone.length < 8) {
+                    showAlert("Please provide your phone number.", 'error');
                     $("#phone").focus();
-                } else if (!email){
-                        swal({
-                            text: "Please provide your email address.",
-                            icon: 'error',
-                            timer: 2000,
-                            buttons: false,
-                        })
-                        $("#email").focus();
+                } else if (!email) {
+                    showAlert("Please provide your email address.", 'error');
+                    $("#email").focus();
                 } else {
                     $.ajax({
                         url: "{% url 'home' %}",
                         type: 'POST',
                         data: {
-                            "name": name,
-                            "email": email,
-                            "phone": phone,
-                            "csrfmiddlewaretoken": "{{ csrf_token }}",
+                            name,
+                            email,
+                            phone,
+                            csrfmiddlewaretoken: "{{ csrf_token }}",
                         },
-                        beforeSend: function(response){
+                        beforeSend: function() {
                             $('#submitBtn').html(`
                                 <div class='d-flex align-items-center justify-content-center'>
-                                    <span class='spinner-border text-light aria-hidden='true'></span>
+                                    <span class='spinner-border text-light' aria-hidden='true'></span>
                                     <span role='status' class="sr-only">processing...</span>
                                 </div>
-                            `)
+                            `);
                         },
-                        success: function(response){
-                            if (response.status == 200){
-                                swal({
-                                    text: "Thanks for accepting the invitation.",
-                                    icon: 'success',
-                                    timer: 2000,
-                                    buttons: false,
-                                })
+                        success: function(response) {
+                            if (response.status == 200) {
+                                showAlert("Thanks for accepting the invitation.", 'success');
                                 setTimeout(() => {
                                     window.location.href = "{% url 'home' %}";
                                 }, 2400);
-                            } else if (response.status == 100){
-                                swal({
-                                    text: "Email address already exist.",
-                                    icon: 'error',
-                                    timer: 3000,
-                                    buttons: false,
-                                })
+                            } else if (response.status == 100) {
+                                showAlert("Email address already exists.", 'error', 3000);
                             }
                             $('#submitBtn').text("Kindly RSVP");
                         },
-                        error: function(error){
-                            swal({
-                                text: "Something went wrong, try again.",
-                                icon: 'error',
-                                timer: 2000,
-                                buttons: false,
-                            })
+                        error: function() {
+                            showAlert("Something went wrong, try again.", 'error');
                             $('#submitBtn').text("Kindly RSVP");
                         },
                     });
                 }
-                
             });
+            
 
         });
    </script>
