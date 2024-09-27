@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Celebrating JC at 50 </title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/inputmask/5.0.6/inputmask.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.0/css/intlTelInput.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"/>
+    <link rel="stylesheet" href="static/css/style.css" />
+
+    <style>
+        .iti { width: 100%; }
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+        .btn-gold {
+            color: #fff;
+            background-color: orangered;
+        }
+        .btn-gold:hover,
+        .btn-gold:focus,
+        .btn-gold:active {
+            background-color: rgb(230, 71, 13);
+            color: #fff;
+        }
+        label {
+            font-size: 14px;
+        }
+       
+    </style>
+</head>
+<body>
+   <div class="container-fluid hero-header">
+
+    <section id="logo" style="padding-top: 13vh">
+        <div class="d-flex flex-column justify-content-center align-items-center">
+           <div id="img" class="text-light text-center">
+                <h6 class="mb-2" style="color: ivory;" id="action">Click on the image to continue.</h6>
+                <img src="static/img/IV.jpg" alt="" style="cursor: pointer; border-radius: 12px;" class="rounded-img" width="354" />
+           </div>
+        </div>
+    </section>
+
+    <!-- Registration Form Start -->
+    <section class="hidden" id="form-container">
+        <div class="row justify-content-center align-items-center">
+            <div class="col-11 col-md-5 col-lg-4 py-2 pb-4" style="border-radius: 10px; background-color: #020202; color: rgb(235, 181, 49)">
+                <div class="p-4 pb-0">
+                    <h4 style="color: orangered;"> Please Enter Your Details </h4>
+                    <small style="font-family: cursive; color: #fff">Let's make a toast to <span style="color: orangered">JC</span> @50</small>
+                </div>
+                <form method="post" class="p-4 pt-2">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label for="first_name" class="form-label">Your Name</label>
+                            <input type="text" name="name" id="name" class="form-control border-secondary" placeholder="John Doe" required/>
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label for="phone" class="form-label">Phone Number</label>
+                            <input type="tel" name="phone" id="phone" class="form-control border-secondary" minlength="10" maxlength="10" placeholder="7062657878" required/>
+                            <small style="font-size: 14px; color: #fff">Enter your WhatsApp number without the leading zero (0)</small>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="text" name="email" id="email" class="form-control border-secondary" placeholder="johndoe@email.com" required/>
+                        </div>                  
+                        <div class="d-flex justify-content-end">
+                            <button class="btn btn-gold" id="submitBtn">Kindly RSVP</button>
+                        </div>
+                    </div>  
+                </form>
+            </div>
+        </div>
+    </section>
+    <!-- Registration Form End -->
+
+   </div>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.0/js/intlTelInput.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            const input = document.querySelector("#phone");
+            const button = document.querySelector('#logo img');
+            const formContainer = document.getElementById('form-container');
+            const actionText = document.getElementById('action');
+
+            let isFormVisible = false; // Track if the form is currently visible
+
+            // Function to show the form
+            const showForm = () => {
+                button.classList.remove('animate__animated', 'animate__flipInX');
+                button.classList.add('animate__animated', 'animate__flipOutX');
+
+                button.addEventListener('animationend', () => {
+                    button.classList.add('hidden');
+                    formContainer.classList.remove('hidden');
+                    formContainer.offsetWidth; // Trigger reflow for animation
+                    formContainer.classList.remove('animate__animated', 'animate__flipOutX');
+                    formContainer.classList.add('animate__animated', 'animate__flipInX');
+                    // document.getElementById('name').focus();
+                    isFormVisible = true; // Update visibility state
+                }, { once: true });
+            };
+
+            // Function to hide the form
+            const hideForm = () => {
+                formContainer.classList.remove('animate__flipInX');
+                formContainer.classList.remove('animate__animated', 'animate__flipInX');
+                formContainer.classList.add('animate__animated', 'animate__flipOutX');
+
+                formContainer.addEventListener('animationend', () => {
+                    formContainer.classList.add('hidden');
+                    button.classList.remove('hidden'); 
+                    button.offsetWidth; 
+                    button.classList.remove('animate__animated', 'animate__flipOutX');
+                    button.classList.add('animate__animated', 'animate__flipInX'); 
+                    isFormVisible = false;
+                }, { once: true });
+            };
+
+            // Show form on button click
+            button.addEventListener('click', showForm);
+
+            // Close form when clicking outside of it
+            document.addEventListener('click', (event) => {
+                const isClickInside = formContainer.contains(event.target) || button.contains(event.target);
+
+                if (!isClickInside && isFormVisible) {
+                    hideForm();
+                }
+            });
+
+            //Setting the country code based on user IP or selected country code
+            window.intlTelInput(input, {
+                initialCountry: "auto",
+                geoIpLookup: function(callback) {
+                    fetch("https://ipinfo.io?token=bcb827c04a7581")
+                        .then(response => response.json())
+                        .then(data => callback(data.country))
+                        .catch(() => callback("us"));
+                },
+                utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.0/js/utils.js"
+            });
+
+            //Submitting the form
+            $('#submitBtn').click(function(e){
+                e.preventDefault();
+                const name = $("#name").val();
+                const email = $("#email").val();
+                const phone = $("#phone").val();
+
+                if (!name){
+                    swal({
+                        text: "Please provide your name.",
+                        icon: 'error',
+                        timer: 2000,
+                        buttons: false,
+                    })
+                    $("#name").focus();
+                } else if (!phone){
+                    swal({
+                        text: "Please provide your phone number.",
+                        icon: 'error',
+                        timer: 2000,
+                        buttons: false,
+                    })
+                    $("#phone").focus();
+                } else if (!email){
+                        swal({
+                            text: "Please provide your email address.",
+                            icon: 'error',
+                            timer: 2000,
+                            buttons: false,
+                        })
+                        $("#email").focus();
+                } else {
+                    $.ajax({
+                        url: "{% url 'home' %}",
+                        type: 'POST',
+                        data: {
+                            "name": name,
+                            "email": email,
+                            "phone": phone,
+                            "csrfmiddlewaretoken": "{{ csrf_token }}",
+                        },
+                        beforeSend: function(response){
+                            $('#submitBtn').html(`
+                                <div class='d-flex align-items-center justify-content-center'>
+                                    <span class='spinner-border text-light aria-hidden='true'></span>
+                                    <span role='status' class="sr-only">processing...</span>
+                                </div>
+                            `)
+                        },
+                        success: function(response){
+                            if (response.status == 200){
+                                swal({
+                                    text: "Thanks for accepting the invitation.",
+                                    icon: 'success',
+                                    timer: 2000,
+                                    buttons: false,
+                                })
+                                setTimeout(() => {
+                                    window.location.href = "{% url 'home' %}";
+                                }, 2400);
+                            } else if (response.status == 100){
+                                swal({
+                                    text: "Email address already exist.",
+                                    icon: 'error',
+                                    timer: 3000,
+                                    buttons: false,
+                                })
+                            }
+                            $('#submitBtn').text("Kindly RSVP");
+                        },
+                        error: function(error){
+                            swal({
+                                text: "Soomething went wrong, try again.",
+                                icon: 'error',
+                                timer: 2000,
+                                buttons: false,
+                            })
+                            $('#submitBtn').text("Kindly RSVP");
+                        },
+                    })
+                }
+                
+            });
+        });
+   </script>
+</body>
+</html>
