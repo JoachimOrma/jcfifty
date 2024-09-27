@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Celebrating JC at 50 </title>
+    <title> JC Party Invitation </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/inputmask/5.0.6/inputmask.min.css" />
@@ -24,14 +24,14 @@
             border: 0;
         }
         .btn-gold {
-            color: #fff;
-            background-color: orangered;
+            color: #000;
+            background-color:  rgb(235, 181, 49);
         }
         .btn-gold:hover,
         .btn-gold:focus,
         .btn-gold:active {
-            background-color: rgb(230, 71, 13);
-            color: #fff;
+            background-color:  rgba(235, 181, 49, .7);
+            color: #000;
         }
         label {
             font-size: 14px;
@@ -42,22 +42,24 @@
 <body>
    <div class="container-fluid hero-header">
 
+    <!-- Invite Image Start -->
     <section id="logo" style="padding-top: 13vh">
         <div class="d-flex flex-column justify-content-center align-items-center">
            <div id="img" class="text-light text-center">
-                <h6 class="mb-2" style="color: ivory;" id="action">Click on the image to continue.</h6>
+                <h6 class="mb-2" style="color: ivory;">Click on the image to continue.</h6>
                 <img src="static/img/IV.jpg" alt="" style="cursor: pointer; border-radius: 12px;" class="rounded-img" width="354" />
            </div>
         </div>
     </section>
+    <!-- Invite Image End -->
 
     <!-- Registration Form Start -->
     <section class="hidden" id="form-container">
         <div class="row justify-content-center align-items-center">
             <div class="col-11 col-md-5 col-lg-4 py-2 pb-4" style="border-radius: 10px; background-color: #020202; color: rgb(235, 181, 49)">
                 <div class="p-4 pb-0">
-                    <h4 style="color: orangered;"> Please Enter Your Details </h4>
-                    <small style="font-family: cursive; color: #fff">Let's make a toast to <span style="color: orangered">JC</span> @50</small>
+                    <h4 style="color:  rgb(235, 181, 49);"> Please Enter Your Details </h4>
+                    <small style="font-family: cursive; color: #fff">Let's make a toast to <span style="color:  rgb(235, 181, 49)">JC</span> @50</small>
                 </div>
                 <form method="post" class="p-4 pt-2">
                     {% csrf_token %}
@@ -68,7 +70,7 @@
                         </div>
                         <div class="col-md-12 mb-3">
                             <label for="phone" class="form-label">Phone Number</label>
-                            <input type="tel" name="phone" id="phone" class="form-control border-secondary" minlength="10" maxlength="10" placeholder="7062657878" required/>
+                            <input type="tel" name="phone" id="phone" class="form-control border-secondary" minlength="14" maxlength="14" placeholder="7062657878" required/>
                             <small style="font-size: 14px; color: #fff">Enter your WhatsApp number without the leading zero (0)</small>
                         </div>
                         <div class="col-12 mb-3">
@@ -136,24 +138,33 @@
             button.addEventListener('click', showForm);
 
             // Close form when clicking outside of it
-            document.addEventListener('click', (event) => {
-                const isClickInside = formContainer.contains(event.target) || button.contains(event.target);
+            // document.addEventListener('click', (event) => {
+            //     const isClickInside = formContainer.contains(event.target) || button.contains(event.target);
 
-                if (!isClickInside && isFormVisible) {
-                    hideForm();
-                }
-            });
+            //     if (!isClickInside && isFormVisible) {
+            //         hideForm();
+            //     }
+            // });
 
             //Setting the country code based on user IP or selected country code
-            window.intlTelInput(input, {
+            const phoneInput = document.querySelector("#phone");
+            const iti = window.intlTelInput(phoneInput, {
                 initialCountry: "auto",
                 geoIpLookup: function(callback) {
-                    fetch("https://ipinfo.io?token=bcb827c04a7581")
+                    fetch('https://ipinfo.io?token=bcb827c04a7581') 
                         .then(response => response.json())
                         .then(data => callback(data.country))
-                        .catch(() => callback("us"));
+                        .catch(() => callback('us'));
                 },
-                utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.0/js/utils.js"
+                utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+            });
+
+            // Retrieve the selected country code
+            phoneInput.addEventListener('countrychange', function() {
+                const countryCode = iti.getSelectedCountryData().dialCode;
+                if (!phoneInput.value.startsWith('+' + countryCode)) {
+                    phoneInput.value = '+' + countryCode + '' + phoneInput.value.replace(/^\+\d+\s*/, '');
+                }
             });
 
             //Submitting the form
@@ -228,17 +239,18 @@
                         },
                         error: function(error){
                             swal({
-                                text: "Soomething went wrong, try again.",
+                                text: "Something went wrong, try again.",
                                 icon: 'error',
                                 timer: 2000,
                                 buttons: false,
                             })
                             $('#submitBtn').text("Kindly RSVP");
                         },
-                    })
+                    });
                 }
                 
             });
+
         });
    </script>
 </body>
